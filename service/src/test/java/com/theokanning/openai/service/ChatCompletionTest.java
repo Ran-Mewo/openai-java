@@ -336,6 +336,12 @@ class ChatCompletionTest {
         ChatMessage callResponse = functionExecutor.executeAndConvertToMessageHandlingExceptions(choice.getMessage().getToolCalls().get(0).getFunction());
         assertNotEquals("error", callResponse.getName());
 
+        ChatMessage toolResponse = functionExecutor.executeAndConvertToMessageHandlingExceptions(choice.getMessage().getToolCalls().get(0));
+        assertNotEquals("error", toolResponse.getName());
+
+        ChatMessage toolResponses = functionExecutor.executeAndConvertToMessagesHandlingExceptions(choice.getMessage().getToolCalls()).get(0);
+        assertNotEquals("error", toolResponses.getName());
+
         // this performs an unchecked cast
         WeatherResponse functionExecutionResponse = functionExecutor.execute(choice.getMessage().getToolCalls().get(0).getFunction());
         assertInstanceOf(WeatherResponse.class, functionExecutionResponse);

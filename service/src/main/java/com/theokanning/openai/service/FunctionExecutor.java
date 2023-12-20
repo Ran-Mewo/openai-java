@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.theokanning.openai.completion.chat.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FunctionExecutor {
 
@@ -47,6 +48,53 @@ public class FunctionExecutor {
 
     public ChatMessage executeAndConvertToMessage(ChatFunctionCall call) {
         return new ChatMessage(ChatMessageRole.FUNCTION.value(), executeAndConvertToJson(call).toPrettyString(), call.getName());
+    }
+
+    public ChatMessage executeAndConvertToMessage(ChatToolCalls toolCall) {
+        return executeAndConvertToMessage(toolCall.getFunction());
+    }
+
+    public Optional<ChatMessage> executeAndConvertToMessageSafely(ChatToolCalls toolCall) {
+        try {
+            return Optional.ofNullable(executeAndConvertToMessage(toolCall));
+        } catch (Exception ignored) {
+            return Optional.empty();
+        }
+    }
+
+    public ChatMessage executeAndConvertToMessageHandlingExceptions(ChatToolCalls toolCall) {
+        try {
+            return executeAndConvertToMessage(toolCall);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return convertExceptionToMessage(exception);
+        }
+    }
+
+    public List<ChatMessage> executeAndConvertToMessagesSafelyFiltered(Collection<ChatToolCalls> toolCalls) {
+        return toolCalls.stream()
+                .map(this::executeAndConvertToMessageSafely)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    public List<Optional<ChatMessage>> executeAndConvertToMessagesSafely(Collection<ChatToolCalls> toolCalls) {
+        return toolCalls.stream()
+                .map(this::executeAndConvertToMessageSafely)
+                .collect(Collectors.toList());
+    }
+
+    public List<ChatMessage> executeAndConvertToMessagesHandlingExceptions(Collection<ChatToolCalls> toolCalls) {
+        return toolCalls.stream()
+                .map(this::executeAndConvertToMessageHandlingExceptions)
+                .collect(Collectors.toList());
+    }
+
+    public List<ChatMessage> executeAndConvertToMessages(Collection<ChatToolCalls> toolCalls) {
+        return toolCalls.stream()
+                .map(this::executeAndConvertToMessage)
+                .collect(Collectors.toList());
     }
 
     public JsonNode executeAndConvertToJson(ChatFunctionCall call) {

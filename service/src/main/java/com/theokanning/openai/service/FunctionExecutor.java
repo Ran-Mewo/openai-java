@@ -138,6 +138,16 @@ public class FunctionExecutor {
         return new ArrayList<>(FUNCTIONS.values());
     }
 
+    public List<ChatTool> getFunctionsAsTools() {
+        return FUNCTIONS.values().stream()
+                .map(function -> {
+                    ChatTool tool = new ChatTool();
+                    tool.setFunction(function);
+                    return tool;
+                })
+                .collect(Collectors.toList());
+    }
+
     public void setFunctions(List<ChatFunction> functions) {
         this.FUNCTIONS.clear();
         functions.forEach(f -> this.FUNCTIONS.put(f.getName(), f));

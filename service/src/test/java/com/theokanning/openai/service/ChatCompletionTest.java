@@ -308,8 +308,6 @@ class ChatCompletionTest {
                 .executor(Weather.class, w -> new WeatherResponse(w.location, w.unit, 25, "sunny"))
                 .build());
         final FunctionExecutor functionExecutor = new FunctionExecutor(functions);
-        final ChatTool tool = new ChatTool();
-        tool.setFunction(functionExecutor.getFunctions().get(0));
         final List<ChatMessage> messages = new ArrayList<>();
         final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), "You are a helpful assistant.");
         final ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), "What is the weather in Monterrey, Nuevo León?");
@@ -320,7 +318,7 @@ class ChatCompletionTest {
                 .builder()
                 .model("gpt-3.5-turbo-0613")
                 .messages(messages)
-                .tools(List.of(tool))
+                .tools(functionExecutor.getFunctionsAsTools())
                 .toolChoice("auto")
                 .n(1)
                 .maxTokens(100)
@@ -364,7 +362,7 @@ class ChatCompletionTest {
                 .builder()
                 .model("gpt-3.5-turbo-0613")
                 .messages(messages)
-                .tools(List.of(tool))
+                .tools(functionExecutor.getFunctionsAsTools())
                 .toolChoice("auto")
                 .n(1)
                 .maxTokens(100)

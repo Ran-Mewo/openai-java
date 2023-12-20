@@ -18,8 +18,10 @@ public class ModerationCategories {
     @JsonProperty("hate/threatening")
     public boolean hateThreatening;
 
-    @JsonProperty("self-harm")
-    public boolean selfHarm;
+    public boolean harassment;
+
+    @JsonProperty("harassment/threatening")
+    public boolean harassmentThreatening;
 
     public boolean sexual;
 
@@ -30,4 +32,13 @@ public class ModerationCategories {
 
     @JsonProperty("violence/graphic")
     public boolean violenceGraphic;
+
+    @JsonProperty("self-harm")
+    public boolean selfHarm;
+
+    @JsonProperty("self-harm/intent")
+    public boolean selfHarmIntent;
+
+    @JsonProperty("self-harm/instructions")
+    public boolean selfHarmInstructions;
 }

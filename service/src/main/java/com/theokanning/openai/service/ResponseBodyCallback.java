@@ -58,11 +58,13 @@ public class ResponseBodyCallback implements Callback<ResponseBody> {
             reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             String line;
             SSE sse = null;
+            boolean sseException = false;
+            String sseExceptionLine = "";
 
             while (!emitter.isCancelled() && (line = reader.readLine()) != null) {
                 if (line.startsWith("data:")) {
-                    String data = line.substring(5).trim();
-                    sse = new SSE(data);
+                    sse = new SSE(line.substring(5).trim());
+                    if (sseException) sseException = false;
                 } else if (line.equals("") && sse != null) {
                     if (sse.isDone()) {
                         if (emitDone) {
@@ -70,12 +72,16 @@ public class ResponseBodyCallback implements Callback<ResponseBody> {
                         }
                         break;
                     }
-
                     emitter.onNext(sse);
                     sse = null;
                 } else {
-                    throw new SSEFormatException("Invalid sse format! " + line);
+                    sseException = true;
+                    sseExceptionLine = line;
                 }
+            }
+
+            if (sseException) { // This code is because sometimes the SSE might be present after some lines
+                throw new SSEFormatException("Invalid sse format! " + sseExceptionLine);
             }
 
             emitter.onComplete();

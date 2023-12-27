@@ -18,15 +18,14 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor(force = true)
-@RequiredArgsConstructor
 @AllArgsConstructor
 public class ChatMessage {
 
 	/**
 	 * Must be either 'system', 'user', 'assistant' or 'function'.<br>
+	 * If it's set to null, it will be set to 'assistant' by default.<br>
 	 * You may use {@link ChatMessageRole} enum.
 	 */
-	@NonNull
 	String role;
 	@JsonInclude() // content should always exist in the call, even if it is null
 	String content;
@@ -40,12 +39,12 @@ public class ChatMessage {
 	ChatFunctionCall functionCall;
 
 	public ChatMessage(String role, String content) {
-		this.role = role;
+		this.role = role == null ? "assistant" : role;
 		this.content = content;
 	}
 
 	public ChatMessage(String role, String content, String name) {
-		this.role = role;
+		this.role = role == null ? "assistant" : role;
 		this.content = content;
 		this.name = name;
 	}

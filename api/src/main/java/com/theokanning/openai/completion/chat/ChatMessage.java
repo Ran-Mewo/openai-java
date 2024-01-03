@@ -1,8 +1,12 @@
 package com.theokanning.openai.completion.chat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -28,7 +32,7 @@ public class ChatMessage {
 	 */
 	String role;
 	@JsonInclude() // content should always exist in the call, even if it is null
-	String content;
+	Object content;
 	//name is optional, The name of the author of this message. May contain a-z, A-Z, 0-9, and underscores, with a maximum length of 64 characters.
 	String name;
 
@@ -37,6 +41,17 @@ public class ChatMessage {
 
 	@JsonProperty("function_call")
 	ChatFunctionCall functionCall;
+
+	public ChatMessage(String role, List<ChatMessageContent> content) {
+		this.role = role == null ? "assistant" : role;
+		this.content = content;
+	}
+
+	public ChatMessage(String role, List<ChatMessageContent> content, String name) {
+		this.role = role == null ? "assistant" : role;
+		this.content = content;
+		this.name = name;
+	}
 
 	public ChatMessage(String role, String content) {
 		this.role = role == null ? "assistant" : role;
@@ -47,6 +62,11 @@ public class ChatMessage {
 		this.role = role == null ? "assistant" : role;
 		this.content = content;
 		this.name = name;
+	}
+
+	@JsonIgnore
+	public String getStringContent() {
+		return content instanceof String ? (String) content : null;
 	}
 
 }

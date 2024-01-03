@@ -606,6 +606,7 @@ public class OpenAiService {
         mapper.addMixIn(ChatFunction.class, ChatFunctionMixIn.class);
         mapper.addMixIn(ChatCompletionRequest.class, ChatCompletionRequestMixIn.class);
         mapper.addMixIn(ChatFunctionCall.class, ChatFunctionCallMixIn.class);
+        mapper.addMixIn(ChatMessage.class, ChatMessageMixIn.class);
         return mapper;
     }
 
@@ -628,7 +629,7 @@ public class OpenAiService {
 
     public Flowable<ChatMessageAccumulator> mapStreamToAccumulator(Flowable<ChatCompletionChunk> flowable) {
         ChatFunctionCall functionCall = new ChatFunctionCall(null, null);
-        ChatMessage accumulatedMessage = new ChatMessage(ChatMessageRole.ASSISTANT.value(), null);
+        ChatMessage accumulatedMessage = new ChatMessage(ChatMessageRole.ASSISTANT.value(), (String) null);
 
         return flowable.map(chunk -> {
             ChatMessage messageChunk = chunk.getChoices().get(0).getMessage();
@@ -643,7 +644,7 @@ public class OpenAiService {
                 }
                 accumulatedMessage.setFunctionCall(functionCall);
             } else {
-                accumulatedMessage.setContent((accumulatedMessage.getContent() == null ? "" : accumulatedMessage.getContent()) + (messageChunk.getContent() == null ? "" : messageChunk.getContent()));
+                accumulatedMessage.setContent((accumulatedMessage.getContent() == null ? "" : accumulatedMessage.getStringContent()) + (messageChunk.getContent() == null ? "" : messageChunk.getStringContent()));
             }
 
             if (chunk.getChoices().get(0).getFinishReason() != null) { // last

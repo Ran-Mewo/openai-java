@@ -31,4 +31,7 @@ public class ChatCompletionChoice {
      */
     @JsonProperty("finish_details")
     FinishDetails finishDetails;
+
+    @JsonProperty("logprobs")
+    LogProb logprobs;
 }

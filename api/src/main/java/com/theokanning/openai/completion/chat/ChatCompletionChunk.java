@@ -29,6 +29,11 @@ public class ChatCompletionChunk {
     String model;
 
     /**
+     * System fingerprint
+     */
+    String fingerprint;
+
+    /**
      * A list of all generated completions.
      */
     List<ChatCompletionChoice> choices;
